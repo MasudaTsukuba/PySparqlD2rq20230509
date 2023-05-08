@@ -9,7 +9,8 @@ import replace_prefix
 def execute_query(input_file):
     pass
     query = ''
-    with open(input_file, 'r') as f:
+    path = '/home/masuda/PycharmProjects/PySparqlQuery20230508/'
+    with open(path+input_file, 'r') as f:
         query = f.read()
     temp1 = query.split('SELECT ')
     temp2 = temp1[1].split('WHERE')
@@ -53,7 +54,9 @@ def uri_query(query, header, file):
 
 
 if __name__ == '__main__':
-    execute_query('query/q3b.txt')
+    execute_query('query/q1.txt')
+    # execute_query('query/q3b.txt')
+    # execute_query('query/q1pred_hotel.txt')
 
     # query_q1 = """
     # PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -73,3 +76,19 @@ if __name__ == '__main__':
     # file_q1 = 'q1.csv'
     # header_q1 = ['s', 'name', 'cname']
     # uri_query(query_q1, header_q1, file_q1)
+
+    query_q1 = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ex: <http://example.com/ontology/>
+    PREFIX country: <http://example.com/predicate/country>
+    PREFIX country_name: <http://example.com/predicate/country_name>
+    PREFIX country_comment: <http://example.com/predicate/country_comment>
+
+    SELECT DISTINCT ?o
+    WHERE {
+        ?s rdf:type ?o.
+    } LIMIT 10
+    """
+    file_q1 = 'test.csv'
+    header_q1 = [  'o']
+    uri_query(query_q1, header_q1, file_q1)
