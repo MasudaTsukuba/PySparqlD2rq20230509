@@ -6,6 +6,19 @@ import csv
 import replace_prefix
 
 
+def execute_query(input_file):
+    pass
+    query = ''
+    with open(input_file, 'r') as f:
+        query = f.read()
+    temp1 = query.split('SELECT ')
+    temp2 = temp1[1].split('WHERE')
+    header = temp2[0].replace('distinct ', '').replace('\n', '').replace('?', '').split(' ')
+    file = input_file.replace('query/', '').replace('.txt', '.csv')
+    results = uri_query(query, header, file)
+    return results['results']['bindings']
+
+
 def uri_query(query, header, file):
     print(file)
     sparql = SPARQLWrapper("http://localhost:2020/sparql")
@@ -36,24 +49,27 @@ def uri_query(query, header, file):
     with open('output/'+file, 'w') as file:
         csv_writer = csv.writer(file)
         csv_writer.writerows(outputs)
+    return results
 
 
 if __name__ == '__main__':
-    query_q1 = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX ex: <http://example.com/ontology/>
-    PREFIX country: <http://example.com/predicate/country>
-    PREFIX country_name: <http://example.com/predicate/country_name>
-    PREFIX country_comment: <http://example.com/predicate/country_comment>
+    execute_query('query/q3b.txt')
 
-    SELECT ?s ?name ?cname
-    WHERE {
-        ?s rdf:type ex:Hotel.
-        ?s rdf:label ?name.
-        ?s country: ?c_id.
-        ?c_id country_name: ?cname.
-    }
-    """
-    file_q1 = 'q1.csv'
-    header_q1 = ['s', 'name', 'cname']
-    uri_query(query_q1, header_q1, file_q1)
+    # query_q1 = """
+    # PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    # PREFIX ex: <http://example.com/ontology/>
+    # PREFIX country: <http://example.com/predicate/country>
+    # PREFIX country_name: <http://example.com/predicate/country_name>
+    # PREFIX country_comment: <http://example.com/predicate/country_comment>
+    #
+    # SELECT ?s ?name ?cname
+    # WHERE {
+    #     ?s rdf:type ex:Hotel.
+    #     ?s rdf:label ?name.
+    #     ?s country: ?c_id.
+    #     ?c_id country_name: ?cname.
+    # }
+    # """
+    # file_q1 = 'q1.csv'
+    # header_q1 = ['s', 'name', 'cname']
+    # uri_query(query_q1, header_q1, file_q1)
