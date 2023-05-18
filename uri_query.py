@@ -40,11 +40,15 @@ def uri_query(query, header, file):
     results_list = ast.literal_eval(replaced_string)
     # for result in results["results"]["bindings"]:
     print('start packing')  # debug
+    output_temp = []
     for result in results_list:
         row = []
         for var in header:
             # row.append(str2uri(result[var]["value"]))
             row.append(result[var]["value"])
+        output_temp.append(row)
+    sorted_outputs = sorted(output_temp, key=lambda x: x[0])
+    for row in sorted_outputs:
         outputs.append(row)
     print('end packing')  # debug
     with open('output/'+file, 'w') as file:
@@ -77,18 +81,18 @@ if __name__ == '__main__':
     # header_q1 = ['s', 'name', 'cname']
     # uri_query(query_q1, header_q1, file_q1)
 
-    query_q1 = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX ex: <http://example.com/ontology/>
-    PREFIX country: <http://example.com/predicate/country>
-    PREFIX country_name: <http://example.com/predicate/country_name>
-    PREFIX country_comment: <http://example.com/predicate/country_comment>
-
-    SELECT DISTINCT ?o
-    WHERE {
-        ?s rdf:type ?o.
-    } LIMIT 10
-    """
-    file_q1 = 'test.csv'
-    header_q1 = [  'o']
-    uri_query(query_q1, header_q1, file_q1)
+    # query_q1 = """
+    # PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    # PREFIX ex: <http://example.com/ontology/>
+    # PREFIX country: <http://example.com/predicate/country>
+    # PREFIX country_name: <http://example.com/predicate/country_name>
+    # PREFIX country_comment: <http://example.com/predicate/country_comment>
+    #
+    # SELECT DISTINCT ?o
+    # WHERE {
+    #     ?s rdf:type ?o.
+    # } LIMIT 10
+    # """
+    # file_q1 = 'test.csv'
+    # header_q1 = [  'o']
+    # uri_query(query_q1, header_q1, file_q1)

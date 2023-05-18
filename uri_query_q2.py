@@ -73,3 +73,4 @@ if __name__ == '__main__':
     file = 'q2.csv'
     header = ['s', 'name', 'cname']
     uri_query(query, header, file)
+
