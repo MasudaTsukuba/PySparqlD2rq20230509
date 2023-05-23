@@ -1,42 +1,53 @@
-import ast
-
 from SPARQLWrapper import SPARQLWrapper, JSON
 from uri_trans import uri2str, str2uri
 import csv
+import ast
+import os
 import replace_prefix
+
+current_working_dir = os.getcwd()
+working_dir = current_working_dir
+if working_dir.endswith('src'):
+    working_dir = os.path.dirname(working_dir)
+# temp = os.listdir(working_dir)
+common_query_path = os.path.dirname(working_dir)+'/PySparqlQuery20230508/query/'
 
 
 def execute_query(input_file):
     pass
-    query = ''
-    path = '/home/masuda/PycharmProjects/PySparqlQuery20230508/'
-    with open(path+input_file, 'r') as f:
-        query = f.read()
-    temp1 = query.split('SELECT ')
+    sparql_query = ''
+    # path = '/home/masuda/PycharmProjects/PySparqlQuery20230508/'
+    with open(common_query_path+input_file, 'r') as f:
+        sparql_query = f.read()
+    temp1 = sparql_query.split('SELECT ')
     temp2 = temp1[1].split('WHERE')
     header = temp2[0].replace('distinct ', '').replace('\n', '').replace('?', '').split(' ')
-    file = input_file.replace('query/', '').replace('.txt', '.csv')
-    results = uri_query(query, header, file)
+    output_file = input_file.replace('.txt', '.csv')  # output file name
+    results = uri_query(sparql_query, header, output_file)
     return results['results']['bindings']
 
 
-def uri_query(query, header, file):
+def uri_query(sparql_query, header, file):
     print(file)
+
+    # preparing for query
     sparql = SPARQLWrapper("http://localhost:2020/sparql")
-    replaced_query = replace_prefix.replace_prefix(query)
+    replaced_query = replace_prefix.replace_prefix(sparql_query)
     str_query = uri2str(replaced_query)
     print(str_query)
-
     sparql.setQuery(str_query)
     sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
-    print(len(results))
-    print(len(results["results"]["bindings"]))
+
+    # start query against d2rq
+    results = sparql.query().convert()  # query against a sparql end point
+    print(len(results["results"]["bindings"]))  # debug
     outputs = [header]
     result_string = str(results["results"]["bindings"])
     print('start uri')  # debug
     replaced_string = str2uri(result_string)
     print('end uri')  # debug
+
+    # save the results in a csv file
     results_list = ast.literal_eval(replaced_string)
     # for result in results["results"]["bindings"]:
     print('start packing')  # debug
@@ -47,20 +58,24 @@ def uri_query(query, header, file):
             # row.append(str2uri(result[var]["value"]))
             row.append(result[var]["value"])
         output_temp.append(row)
-    sorted_outputs = sorted(output_temp, key=lambda x: x[0])
+    sorted_outputs = sorted(output_temp, key=lambda x: (x[0]))  # sort the results
     for row in sorted_outputs:
         outputs.append(row)
     print('end packing')  # debug
-    with open('output/'+file, 'w') as file:
+    with open(working_dir+'/output/'+file, 'w') as file:  # write to a csv file
         csv_writer = csv.writer(file)
         csv_writer.writerows(outputs)
     return results
 
 
 if __name__ == '__main__':
-    execute_query('query/q1.txt')
-    # execute_query('query/q3b.txt')
-    # execute_query('query/q1pred_hotel.txt')
+    query = 'q1.txt'
+    query = 'q3b.txt'
+    query = 'q5.txt'
+    query = 'q1pred_build.txt'
+    query = 'query_type_object_hotel20230518.txt'
+    # query = 'q1pred_get_hotel.txt'
+    execute_query(query)
 
     # query_q1 = """
     # PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
