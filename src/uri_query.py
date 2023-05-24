@@ -10,7 +10,8 @@ working_dir = current_working_dir
 if working_dir.endswith('src'):
     working_dir = os.path.dirname(working_dir)
 # temp = os.listdir(working_dir)
-common_query_path = os.path.dirname(working_dir)+'/PySparqlQuery20230508/query/'
+# common_query_path = os.path.dirname(working_dir)+'/PySparqlQuery20230508/query/'
+common_query_path = os.path.dirname(working_dir)+'/PySparqlSatoNew20230509/query/'
 
 
 def execute_query(input_file):
